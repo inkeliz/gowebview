@@ -3,7 +3,6 @@
 package gowebview
 
 import (
-	"fmt"
 	"golang.org/x/sys/windows"
 	"os"
 	"path/filepath"
@@ -56,7 +55,6 @@ func newWindow(config *Config) (wv WebView, err error) {
 
 	w.dll = windows.NewLazyDLL(filepath.Join(config.PathExtraction, "webview.dll"))
 	if err = w.dll.Load(); err != nil {
-		fmt.Println("err", err)
 		return nil, err
 	}
 
