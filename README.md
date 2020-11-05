@@ -50,9 +50,12 @@ must use  `gowebview.New(&Config{Debug: true})` instead. Also, there's a `error`
 
 ## TODO
 
-1. Add support to programmatically allow "locahost connections".
+1. ~~Add support to programmatically allow "locahost connections".~~
 
-    > Currently you must run `CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.Win32WebViewHost_cw5n1h2txyewy"` externally.
+    > ~~Currently you must run `CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.Win32WebViewHost_cw5n1h2txyewy"` externally.~~
+
+    > DONE. It's now implemented for Windows, if you connect to `http://127.0.0.1` it will prompt the user to allow such stuff. You don't need to execute the sofware as admin, it'll be request only when needed.                                                                                                                                                                                                                                          
+    If you want, you can call `AllowPrivateNetwork()` (only on Windows).
 
 2. Add support for Android (compatible with [Gio](https://gioui.org))
 

@@ -1,8 +1,9 @@
-//+build windows
+//+build windows,amd64
 
 package gowebview
 
 import (
+	"github.com/inkeliz/gowebview/internal/network"
 	"golang.org/x/sys/windows"
 	"os"
 	"path/filepath"
@@ -105,6 +106,9 @@ func (w *webview) SetSize(width int64, height int64, hint Hint) {
 }
 
 func (w *webview) SetURL(url string) {
+	if network.IsPrivateNetworkString(url) {
+		w.AllowPrivateNetwork()
+	}
 	if url == "" {
 		url = w.index
 	}
@@ -117,6 +121,18 @@ func (w *webview) Init(js string) {
 
 func (w *webview) Eval(js string) {
 	w.call("webview_eval", uintptrString(js))
+}
+
+// AllowPrivateNetwork will enable the possibility to connect against private network IPs. By default, on Windows, it's
+// not possible and it needs to run `CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.Win32WebViewHost_cw5n1h2txyewy"`
+// on high privilege mode (however, the WebView doesn't work on high privilege).
+//
+func (w *webview) AllowPrivateNetwork() error {
+	if network.IsAllowedPrivateConnections() {
+		return nil
+	}
+
+	return network.EnablePrivateConnections()
 }
 
 func (w *webview) call(function string, a ...uintptr) (uintptr, uintptr, error) {
