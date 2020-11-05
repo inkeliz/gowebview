@@ -35,7 +35,7 @@ func TestNewLocalHost(t *testing.T) {
 		writer.Write([]byte("Testing Localhost connection"))
 	})
 
-	go func(ip string, mux *http.ServeMux){
+	go func(ip string, mux *http.ServeMux) {
 		if err := http.ListenAndServe(ip, mux); err != nil {
 			t.Error(err)
 		}
@@ -50,7 +50,7 @@ func TestNewLocalHost(t *testing.T) {
 	defer w.Destroy()
 	w.SetTitle("Hello World")
 	w.SetSize(800, 800, HintMin)
-	w.SetURL(`http://`+ip)
+	w.SetURL(`http://` + ip)
 	w.Run()
 }
 
