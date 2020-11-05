@@ -3,10 +3,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
+	"go/format"
 	"golang.org/x/crypto/blake2b"
 	"io/ioutil"
-	"os"
 	"text/template"
 )
 
@@ -72,16 +73,21 @@ func main() {
 			c.Files[n].Hash = binToByteArrayHex(hash[:])
 		}
 
-		out, err := os.Create(c.Output)
+		out := bytes.NewBuffer(nil)
+		if err := base.Execute(out, c); err != nil {
+			panic(err)
+		}
+
+		outFormatted, err := format.Source(out.Bytes())
 		if err != nil {
 			panic(err)
 		}
 
-		err = base.Execute(out, c)
-		if err != nil {
+		if err := ioutil.WriteFile(c.Output, outFormatted, 0755); err != nil {
 			panic(err)
 		}
 	}
+
 }
 
 // binToByteArrayHex creates the "Golang Hex", in order to use something like `var X = []byte {0x01, 0x02, 0x03}`
