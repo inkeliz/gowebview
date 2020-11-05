@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+	"syscall"
 )
 
 var appName = `microsoft.win32webviewhost_cw5n1h2txyewy`
@@ -17,7 +18,10 @@ var (
 
 // IsAllowedPrivateConnections will return TRUE if the app is already on the whitelist.
 func IsAllowedPrivateConnections() bool {
-	result, err := exec.Command(`cmd`, `/c`, `CheckNetIsolation.exe`, `LoopbackExempt`, `-s`).CombinedOutput()
+	cmd := exec.Command(`cmd`, `/c`, `CheckNetIsolation.exe`, `LoopbackExempt`, `-s`)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+
+	result, err := cmd.CombinedOutput()
 	if err != nil {
 		return false
 	}
@@ -48,9 +52,15 @@ func setPrivateConnections(enable bool) error {
 
 	// That command MUST run as Administrator, so we are using powershell with `-Verb RunAs`
 	// powershell.exe -Command "Start-Process cmd '/c CheckNetIsolation.exe LoopbackExempt -a -n={APP_NAME} > {PATH}'" -Verb RunAs -WindowStyle hidden"
-	err := exec.Command(`powershell.exe`, `-Command`,
-		`Start-Process cmd '/c CheckNetIsolation.exe LoopbackExempt `+param+` -n=`+appName+`' -Verb RunAs -WindowStyle hidden -Wait`).Run()
-	if err != nil {
+	cmd := exec.Command(
+		`powershell.exe`,
+		`-Command`,
+		`Start-Process cmd '/c CheckNetIsolation.exe LoopbackExempt `+param+` -n=`+appName+`' -Verb RunAs -WindowStyle hidden -Wait`,
+	)
+
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+
+	if err := cmd.Run(); err != nil {
 		return ErrExecCommand
 	}
 
