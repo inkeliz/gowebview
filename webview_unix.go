@@ -80,8 +80,8 @@ func (w *webview) Terminate() {
 	C.webview_terminate(w.w)
 }
 
-func (w *webview) Window() unsafe.Pointer {
-	return C.webview_get_window(w.w)
+func (w *webview) Window() uintptr {
+	return uintptr(unsafe.Pointer(C.webview_get_window(w.w)))
 }
 
 func (w *webview) SetURL(url string) {

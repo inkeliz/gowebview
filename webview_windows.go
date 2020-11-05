@@ -91,9 +91,9 @@ func (w *webview) Destroy() {
 	w.call("webview_destroy")
 }
 
-func (w *webview) Window() unsafe.Pointer {
+func (w *webview) Window() uintptr {
 	r1, _, _ := w.call("webview_get_window")
-	return unsafe.Pointer(&r1)
+	return r1
 }
 
 func (w *webview) SetTitle(title string) {

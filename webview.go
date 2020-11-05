@@ -2,14 +2,10 @@ package gowebview
 
 //go:generate go run ./generator/generate.go
 
-import (
-	"unsafe"
-)
-
 // Hint are used to configure window sizing and resizing
 type Hint int
 
-// Points are used to configure the size or coordinates.
+// Point are used to configure the size or coordinates.
 type Point struct {
 	X, Y int64
 }
@@ -31,7 +27,7 @@ type WebView interface {
 	// Window returns a native window handle pointer. When using GTK backend the
 	// pointer is GtkWindow pointer, when using Cocoa backend the pointer is
 	// NSWindow pointer, when using Win32 backend the pointer is HWND pointer.
-	Window() unsafe.Pointer
+	Window() uintptr
 
 	// SetTitle updates the title of the native window. Must be called from the UI
 	// thread.
