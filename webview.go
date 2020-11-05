@@ -6,9 +6,15 @@ import (
 	"unsafe"
 )
 
-// Hints are used to configure window sizing and resizing
+// Hint are used to configure window sizing and resizing
 type Hint int
 
+// Points are used to configure the size or coordinates.
+type Point struct {
+	X, Y int64
+}
+
+// WebView is the interface implemented by each webview.
 type WebView interface {
 
 	// Run runs the main loop until it's terminated. After this function exits -
@@ -50,26 +56,23 @@ type WebView interface {
 	Eval(js string)
 }
 
+// Config are used to set the initial and default values to the WebView.
 type Config struct {
-	// Title defines the title of the window
+	// Title defines the title of the window.
 	Title string
-	// Size defines the Width x Height of the window
+	// Size defines the Width x Height of the window.
 	Size Point
-	// Path defines the path where the DLL will be exported
+	// Path defines the path where the DLL will be exported.
 	PathExtraction string
 	// IgnoreExtraction if true the DLL will not be exported/extracted. If true you need to keep the DLL in the
 	// same folder of the executable or at any path at %PATH%.
 	IgnoreExtraction bool
-	// Index defines the default page (trigger when SetURL("") and before any SetURL call)
+	// Index defines the default page (trigger when SetURL("") and before any SetURL call).
 	Index string
-	// Debug if is non-zero the Developer Tools will be enabled (if supported)
+	// Debug if is non-zero the Developer Tools will be enabled (if supported).
 	Debug bool
-
+	// Window defines the window handle (GtkWindow, NSWindow or HWND pointer).
 	Window uintptr
-}
-
-type Point struct {
-	X, Y int64
 }
 
 // New calls NewWindow to create a new window and a new webview instance. If debug

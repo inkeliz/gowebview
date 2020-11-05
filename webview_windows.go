@@ -11,16 +11,16 @@ import (
 )
 
 const (
-	// Width and height are default size
+	// HintNone set the width and height are default size
 	HintNone Hint = iota
 
-	// Window size can not be changed by a user
+	// HintFixed prevents the window size to be changed by a user
 	HintFixed
 
-	// Width and height are minimum bounds
+	// HintMin set the minimum bounds
 	HintMin
 
-	// Width and height are maximum bounds
+	// HintMax set the maximum bounds
 	HintMax
 )
 

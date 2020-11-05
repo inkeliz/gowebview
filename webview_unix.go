@@ -31,16 +31,16 @@ func init() {
 }
 
 const (
-	// Width and height are default size
+	// HintNone set the width and height are default size
 	HintNone = C.WEBVIEW_HINT_NONE
 
-	// Window size can not be changed by a user
+	// HintFixed prevents the window size to be changed by a user
 	HintFixed = C.WEBVIEW_HINT_FIXED
 
-	// Width and height are minimum bounds
+	// HintMin set the minimum bounds
 	HintMin = C.WEBVIEW_HINT_MIN
 
-	// Width and height are maximum bounds
+	// HintMax set the maximum bounds
 	HintMax = C.WEBVIEW_HINT_MAX
 )
 
