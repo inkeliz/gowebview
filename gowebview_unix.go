@@ -13,7 +13,7 @@ package gowebview
 
 #cgo windows CFLAGS: -g -std=c11 -Iinclude -DPLAIN_API_ONLY -D_BSD_SOURCE -D_DEFAULT_SOURCE
 
-#include "webview_unix.h"
+#include "gowebview_unix.h"
 
 #include <stdlib.h>
 #include <stdint.h>
