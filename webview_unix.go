@@ -1,4 +1,4 @@
-//+build linux,amd64 darwin,amd64
+//+build !android,!windows,linux,darwin
 
 package gowebview
 
@@ -62,9 +62,9 @@ func boolToInt(b bool) C.int {
 	return 0
 }
 
-func newWindow(debug bool, appName string, window unsafe.Pointer) (WebView, error) {
+func newWindow(config *Config) (WebView, error) {
 	w := new(webview)
-	w.w = C.webview_create(boolToInt(debug), window)
+	w.w = C.webview_create(boolToInt(config.Debug), config.Window)
 	return w, nil
 }
 
