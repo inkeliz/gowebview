@@ -67,8 +67,12 @@ type Config struct {
 	Index string
 	// Debug if is non-zero the Developer Tools will be enabled (if supported).
 	Debug bool
-	// Window defines the window handle (GtkWindow, NSWindow or HWND pointer).
+	// Window defines the window handle (GtkWindow, NSWindow, HWND pointer or View pointer for Android).
+	// For Gio (Android):  it MUST point to `e.View` from `app.ViewEvent`
 	Window uintptr
+	// VM defines the JNI VM for Android
+	// For Gio (Android):  it MUST point to `app.JavaVM()`
+	VM uintptr
 }
 
 // New calls NewWindow to create a new window and a new webview instance. If debug
