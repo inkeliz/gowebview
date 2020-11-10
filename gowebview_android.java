@@ -58,14 +58,14 @@ public class gowebview_android {
     public void webview_destroy() {
         ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
             public void run() {
+                ((Activity)primaryView.getContext()).setContentView(primaryView);
+
                 webBrowser.clearHistory();
                 webBrowser.clearCache(true);
                 webBrowser.onPause();
                 webBrowser.removeAllViews();
                 webBrowser.pauseTimers();
                 webBrowser.destroy();
-
-                ((Activity)primaryView.getContext()).setContentView(primaryView);
             }
         });
     }
