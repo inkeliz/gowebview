@@ -38,7 +38,11 @@ public class gowebview_android {
 
     // Executed when call `.SetURL(url string)`
     public void webview_navigate(String url) {
-        webBrowser.loadUrl(url);
+        ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
+            public void run() {
+               webBrowser.loadUrl(url);
+            }
+        });
     }
 
     // Executed when call `.Run()`

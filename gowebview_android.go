@@ -34,12 +34,15 @@ type webview struct {
 
 	closed chan bool
 	mutex  *sync.Mutex
+
+	index string
 }
 
 func newWindow(config *Config) (wv WebView, err error) {
 	w := &webview{
 		closed: make(chan bool),
 		mutex:  new(sync.Mutex),
+		index:  config.Index,
 	}
 
 	if config.VM == 0 {
@@ -110,6 +113,8 @@ func newWindow(config *Config) (wv WebView, err error) {
 		return nil, err
 	}
 
+	w.SetURL(w.index)
+
 	return w, nil
 }
 
@@ -156,6 +161,10 @@ func (w *webview) SetSize(width int64, height int64, hint Hint) {
 }
 
 func (w *webview) SetURL(url string) {
+	if url == "" {
+		url = w.index
+	}
+
 	w.callArgs("webview_navigate", "(Ljava/lang/String;)V", func(env jni.Env) []jni.Value {
 		return []jni.Value{
 			jni.Value(jni.JavaString(env, url)),
@@ -189,4 +198,3 @@ func (w *webview) callArgs(name, sig string, args func(env jni.Env) []jni.Value)
 		return jni.CallVoidMethod(env, w.objWebView, jni.GetMethodID(env, w.clsWebView, name, sig), args(env)...)
 	})
 }
-
