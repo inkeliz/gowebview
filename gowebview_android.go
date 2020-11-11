@@ -113,7 +113,8 @@ func newWindow(config *Config) (wv WebView, err error) {
 		return nil, err
 	}
 
-	w.SetURL(w.index)
+	w.SetURL(config.Index)
+	w.SetProxy(config.Proxy)
 
 	return w, nil
 }
@@ -172,6 +173,19 @@ func (w *webview) SetURL(url string) {
 	})
 }
 
+func (w *webview) SetProxy(proxy *HTTPProxy) {
+	b, err := w.callBooleanArgs("webview_proxy", "(Ljava/lang/String;Ljava/lang/String;)Z", func(env jni.Env) []jni.Value {
+		return []jni.Value{
+			jni.Value(jni.JavaString(env, proxy.IP)),
+			jni.Value(jni.JavaString(env, proxy.Port)),
+		}
+	})
+
+	if b != true || err != nil {
+		panic(err)
+	}
+}
+
 func (w *webview) Init(js string) {
 	return
 }
@@ -197,4 +211,20 @@ func (w *webview) callArgs(name, sig string, args func(env jni.Env) []jni.Value)
 	return jni.Do(w.vm, func(env jni.Env) error {
 		return jni.CallVoidMethod(env, w.objWebView, jni.GetMethodID(env, w.clsWebView, name, sig), args(env)...)
 	})
+}
+
+func (w *webview) callBooleanArgs(name, sig string, args func(env jni.Env) []jni.Value) (b bool, err error) {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+
+	if w.objWebView == 0 || w.clsWebView == 0 {
+		return
+	}
+
+	err = jni.Do(w.vm, func(env jni.Env) error {
+		b, err = jni.CallBooleanMethod(env, w.objWebView, jni.GetMethodID(env, w.clsWebView, name, sig), args(env)...)
+		return err
+	})
+
+	return b, err
 }

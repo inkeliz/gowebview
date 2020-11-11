@@ -1,13 +1,15 @@
 package gowebview
 
+import (
+	"strings"
+)
+
 //go:generate go run ./generator/generate.go
 
-// Hint are used to configure window sizing and resizing
-type Hint int
-
-// Point are used to configure the size or coordinates.
-type Point struct {
-	X, Y int64
+// New calls NewWindow to create a new window and a new webview instance. If debug
+// is non-zero - developer tools will be enabled (if the platform supports them).
+func New(config *Config) (WebView, error) {
+	return newWindow(config)
 }
 
 // WebView is the interface implemented by each webview.
@@ -67,6 +69,8 @@ type Config struct {
 	Index string
 	// Debug if is non-zero the Developer Tools will be enabled (if supported).
 	Debug bool
+	// Proxy defines the proxy which the connection will be pass pass through.
+	Proxy *HTTPProxy
 	// Window defines the window handle (GtkWindow, NSWindow, HWND pointer or View pointer for Android).
 	// For Gio (Android):  it MUST point to `e.View` from `app.ViewEvent`
 	Window uintptr
@@ -75,8 +79,29 @@ type Config struct {
 	VM uintptr
 }
 
-// New calls NewWindow to create a new window and a new webview instance. If debug
-// is non-zero - developer tools will be enabled (if the platform supports them).
-func New(config *Config) (WebView, error) {
-	return newWindow(config)
+// Hint are used to configure window sizing and resizing
+type Hint int
+
+// Point are used to configure the size or coordinates.
+type Point struct {
+	X, Y int64
+}
+
+// HTTPProxy are used to configure the Proxy
+type HTTPProxy struct {
+	IP   string
+	Port string
+}
+
+// Network implements net.Addr
+func (p *HTTPProxy) Network() string {
+	return "tcp"
+}
+
+// String implements net.Addr
+func (p *HTTPProxy) String() string {
+	if strings.Index(p.IP, `:`) >= 0 && !strings.HasPrefix(p.IP, `[`) && !strings.HasPrefix(p.IP, `]`) {
+		return "[" + p.IP + "]:" + p.Port
+	}
+	return p.IP + ":" + p.Port
 }
