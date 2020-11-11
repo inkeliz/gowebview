@@ -26,55 +26,45 @@ const (
 )
 
 type webview struct {
-	w     uintptr
-	dll   *windows.LazyDLL
-	index string
+	w   uintptr
+	dll *windows.LazyDLL
+
+	config *Config
 }
 
 func newWindow(config *Config) (wv WebView, err error) {
 	runtime.LockOSThread()
 
-	if config == nil {
-		config = new(Config)
+	w := &webview{
+		config: config,
 	}
 
-	if config.PathExtraction == "" && config.IgnoreExtraction == false {
-		config.PathExtraction = filepath.Join(os.TempDir(), "gowebview")
+	if err = extract(config.WindowConfig.Path); err != nil {
+		return nil, err
 	}
 
-	if config.IgnoreExtraction == false {
-		if err = extract(config.PathExtraction); err != nil {
-			return nil, err
-		}
-
-		if err = os.Setenv("PATH", config.PathExtraction+`;`+os.Getenv("PATH")); err != nil {
-			return nil, err
-		}
+	if err = os.Setenv("PATH", config.WindowConfig.Path+`;`+os.Getenv("PATH")); err != nil {
+		return nil, err
 	}
 
-	w := new(webview)
-
-	w.dll = windows.NewLazyDLL(filepath.Join(config.PathExtraction, "webview.dll"))
+	w.dll = windows.NewLazyDLL(filepath.Join(config.WindowConfig.Path, "webview.dll"))
 	if err = w.dll.Load(); err != nil {
 		return nil, err
 	}
 
-	w.w, _, err = w.call("webview_create", uintptrBool(config.Debug), config.Window)
+	w.w, _, err = w.call("webview_create", uintptrBool(config.Debug), config.WindowConfig.Window)
 	if err != nil && w.w == 0 {
 		return nil, err
 	}
 
-	if config.Title != "" {
-		w.SetTitle(config.Title)
-	}
+	w.SetTitle(config.WindowConfig.Title)
+	w.SetURL(config.URL)
+	w.SetSize(config.WindowConfig.Size, HintMin)
 
-	if config.Index != "" {
-		w.index = config.Index
-		w.SetURL(config.Index)
-	}
-
-	if config.Size.X > 0 && config.Size.Y > 0 {
-		w.SetSize(config.Size.X, config.Size.Y, HintMin)
+	if config.TransportConfig.IgnoreNetworkIsolation && !network.IsAllowedPrivateConnections() {
+		if err := network.EnablePrivateConnections(); err != nil {
+			return nil, err
+		}
 	}
 
 	return w, nil
@@ -101,16 +91,13 @@ func (w *webview) SetTitle(title string) {
 	w.call("webview_set_title", uintptrString(title))
 }
 
-func (w *webview) SetSize(width int64, height int64, hint Hint) {
-	w.call("webview_set_size", uintptrInt(width), uintptrInt(height), uintptr(hint))
+func (w *webview) SetSize(point *Point, hint Hint) {
+	w.call("webview_set_size", uintptrInt(point.X), uintptrInt(point.Y), uintptr(hint))
 }
 
 func (w *webview) SetURL(url string) {
-	if network.IsPrivateNetworkString(url) {
-		w.AllowPrivateNetwork()
-	}
 	if url == "" {
-		url = w.index
+		url = w.config.URL
 	}
 	w.call("webview_navigate", uintptrString(url))
 }
@@ -121,17 +108,6 @@ func (w *webview) Init(js string) {
 
 func (w *webview) Eval(js string) {
 	w.call("webview_eval", uintptrString(js))
-}
-
-// AllowPrivateNetwork will enable the possibility to connect against private network IPs. By default, on Windows, it's
-// not possible and it needs to run `CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.Win32WebViewHost_cw5n1h2txyewy"`
-// on high privilege mode (however, the WebView doesn't work on high privilege).
-func (w *webview) AllowPrivateNetwork() error {
-	if network.IsAllowedPrivateConnections() {
-		return nil
-	}
-
-	return network.EnablePrivateConnections()
 }
 
 func (w *webview) call(function string, a ...uintptr) (uintptr, uintptr, error) {

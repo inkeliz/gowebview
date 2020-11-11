@@ -1,6 +1,9 @@
 package gowebview
 
 import (
+	"crypto/x509"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -9,6 +12,30 @@ import (
 // New calls NewWindow to create a new window and a new webview instance. If debug
 // is non-zero - developer tools will be enabled (if the platform supports them).
 func New(config *Config) (WebView, error) {
+	if config == nil {
+		config = new(Config)
+	}
+
+	if config.WindowConfig == nil {
+		config.WindowConfig = &WindowConfig{}
+	}
+
+	if config.TransportConfig == nil {
+		config.TransportConfig = &TransportConfig{}
+	}
+
+	if config.WindowConfig.Title == "" {
+		config.WindowConfig.Title = "gowebview"
+	}
+
+	if config.WindowConfig.Size == nil {
+		config.WindowConfig.Size = &Point{X: 600, Y: 600}
+	}
+
+	if config.WindowConfig.Path == "" {
+		config.WindowConfig.Path = filepath.Join(os.TempDir(), config.WindowConfig.Title)
+	}
+
 	return newWindow(config)
 }
 
@@ -36,7 +63,7 @@ type WebView interface {
 	SetTitle(title string)
 
 	// SetSize updates native window size. See Hint constants.
-	SetSize(w int64, h int64, hint Hint)
+	SetSize(point *Point, hint Hint)
 
 	// Navigate navigates webview to the given URL. URL may be a data URI, i.e.
 	// "data:text/text,<html>...</html>". It is often ok not to url-encode it
@@ -56,31 +83,82 @@ type WebView interface {
 
 // Config are used to set the initial and default values to the WebView.
 type Config struct {
-	// Title defines the title of the window.
-	Title string
-	// Size defines the Width x Height of the window.
-	Size Point
-	// Path defines the path where the DLL will be exported.
-	PathExtraction string
-	// IgnoreExtraction if true the DLL will not be exported/extracted. If true you need to keep the DLL in the
-	// same folder of the executable or at any path at %PATH%.
-	IgnoreExtraction bool
-	// Index defines the default page (trigger when SetURL("") and before any SetURL call).
-	Index string
+
+	// WindowConfig keeps configurations about the window
+	WindowConfig *WindowConfig
+
+	// TransportConfig keeps configurations about the network traffic
+	TransportConfig *TransportConfig
+
+	// URL defines the default page.
+	URL string
+
 	// Debug if is non-zero the Developer Tools will be enabled (if supported).
 	Debug bool
-	// Proxy defines the proxy which the connection will be pass pass through.
-	Proxy *HTTPProxy
+}
+
+// WindowConfig describes topics related to the Window/View.
+type WindowConfig struct {
+
+	// Title defines the title of the window.
+	Title string
+
+	// Size defines the Width x Height of the window.
+	Size *Point
+
+	// Path defines the path where the DLL will be exported.
+	Path string
+
+	// @TODO Support Visibility (WindowMode)
+	// Visibility defines how the page must open.
+	//Visibility Visibility
+
 	// Window defines the window handle (GtkWindow, NSWindow, HWND pointer or View pointer for Android).
 	// For Gio (Android):  it MUST point to `e.View` from `app.ViewEvent`
 	Window uintptr
+
 	// VM defines the JNI VM for Android
 	// For Gio (Android):  it MUST point to `app.JavaVM()`
 	VM uintptr
 }
 
+// WindowConfig describes topics related to the network traffic.
+type TransportConfig struct {
+
+	// Proxy defines the proxy which the connection will be pass through.
+	Proxy *HTTPProxy
+
+	// InsecureBypassCustomProxy if true it might ignore the Proxy settings provided, if fails it to be used. Otherwise
+	// it could return ErrFeatureNotSupported or ErrImpossibleProxy when create the WebView.
+	//
+	// It doesn't have any effect if Proxy is undefined (nil).
+	// WARNING: It's might be danger if you define an custom Proxy, since it expose the connection without any proxy.
+	InsecureIgnoreCustomProxy bool
+
+	// Authorities defines custom authorities that your app trusts. It could be combined with standard authorities from
+	// the machine, it might adds the certificate persistent on the user machine and might requires user interaction
+	// to approve such action.
+	CertificateAuthorities []x509.Certificate
+
+	// @TODO Support CertificatePinning
+	// CertificatePinning if set will drop the connection if connect to one website that doesn't have the exactly
+	// same certificate hash.
+	// CertificateKeyPinning []byte
+
+	// @TODO Support InsecureIgnoreCAVerification
+	// InsecureIgnoreCAVerification if true will load pages can be loaded without verifies the certificate.
+	// WARNING: It's might be danger and expose you to MITM.
+	//InsecureIgnoreCertificateVerification bool
+
+	// IgnoreNetworkIsolation if true will load pages from the local-network (such as 127.0.0.1).
+	IgnoreNetworkIsolation bool
+}
+
 // Hint are used to configure window sizing and resizing
 type Hint int
+
+// Visibility are used to configure if the window mode (maximized or minimized)
+type Visibility int
 
 // Point are used to configure the size or coordinates.
 type Point struct {

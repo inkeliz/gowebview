@@ -35,26 +35,22 @@ type webview struct {
 	closed chan bool
 	mutex  *sync.Mutex
 
-	index string
+	config *Config
 }
 
 func newWindow(config *Config) (wv WebView, err error) {
 	w := &webview{
 		closed: make(chan bool),
 		mutex:  new(sync.Mutex),
-		index:  config.Index,
+		config: config,
 	}
 
-	if config.VM == 0 {
+	if config.WindowConfig.VM == 0 || config.WindowConfig.Window == 0 {
 		return
 	}
 
-	if config.Window == 0 {
-		return
-	}
-
-	w.vm = jni.JVMFor(config.VM)
-	w.view = jni.Class(config.Window)
+	w.vm = jni.JVMFor(config.WindowConfig.VM)
+	w.view = jni.Class(config.WindowConfig.Window)
 
 	err = jni.Do(w.vm, func(env jni.Env) error {
 		obj := jni.Object(w.view)
@@ -113,8 +109,8 @@ func newWindow(config *Config) (wv WebView, err error) {
 		return nil, err
 	}
 
-	w.SetURL(config.Index)
-	w.SetProxy(config.Proxy)
+	w.SetURL(config.URL)
+	w.SetProxy(config.TransportConfig.Proxy)
 
 	return w, nil
 }
@@ -157,13 +153,13 @@ func (w *webview) SetTitle(title string) {
 	return
 }
 
-func (w *webview) SetSize(width int64, height int64, hint Hint) {
+func (w *webview) SetSize(point *Point, hint Hint) {
 	return
 }
 
 func (w *webview) SetURL(url string) {
 	if url == "" {
-		url = w.index
+		url = w.config.URL
 	}
 
 	w.callArgs("webview_navigate", "(Ljava/lang/String;)V", func(env jni.Env) []jni.Value {
@@ -173,7 +169,11 @@ func (w *webview) SetURL(url string) {
 	})
 }
 
-func (w *webview) SetProxy(proxy *HTTPProxy) {
+func (w *webview) SetProxy(proxy *HTTPProxy) error {
+	if proxy == nil {
+		return nil
+	}
+
 	b, err := w.callBooleanArgs("webview_proxy", "(Ljava/lang/String;Ljava/lang/String;)Z", func(env jni.Env) []jni.Value {
 		return []jni.Value{
 			jni.Value(jni.JavaString(env, proxy.IP)),
@@ -182,8 +182,10 @@ func (w *webview) SetProxy(proxy *HTTPProxy) {
 	})
 
 	if b != true || err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func (w *webview) Init(js string) {
