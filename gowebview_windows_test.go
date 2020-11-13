@@ -90,7 +90,7 @@ func TestNewConfig(t *testing.T) {
 	path := filepath.Join(os.TempDir(), hex.EncodeToString(b))
 
 	w, err := New(&Config{
-		WindowConfig: &WindowConfig{ Size: &Point{X: 800, Y: 800}, Path: path},
+		WindowConfig: &WindowConfig{ Size: &Point{X: 800, Y: 800}, Path: path, Visibility: VisibilityMinimized},
 	})
 
 	if err != nil {

@@ -68,7 +68,7 @@ public class gowebview_android {
         });
     }
 
-    // Executed when call `.Run()`
+    // Executed when call `.Run()` or `.SetVisibility()`
     public void webview_run() {
         ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
             public void run() {
@@ -87,6 +87,15 @@ public class gowebview_android {
                 webBrowser.removeAllViews();
                 webBrowser.pauseTimers();
                 webBrowser.destroy();
+            }
+        });
+    }
+
+    // Executed when call `.SetVisibility()`
+    public void webview_hide() {
+        ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
+            public void run() {
+                ((Activity)primaryView.getContext()).setContentView(primaryView);
             }
         });
     }
