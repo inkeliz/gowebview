@@ -57,10 +57,6 @@ func newWindow(config *Config) (wv WebView, err error) {
 		}
 	}
 
-	if err = os.Setenv("PATH", config.WindowConfig.Path+`;`+os.Getenv("PATH")); err != nil {
-		return nil, err
-	}
-
 	for _, s := range []string{"WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", "WEBVIEW2_USER_DATA_FOLDER", "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "WEBVIEW2_RELEASE_CHANNEL_PREFERENCE"} {
 		os.Unsetenv(s)
 	}
@@ -216,10 +212,6 @@ func (w *webview) SetURL(url string) {
 		syscall.Syscall(w.browser.webview.VTBL.Navigate, 2, uintptr(unsafe.Pointer(w.browser.webview)), uintptr(unsafe.Pointer(windows.StringToUTF16Ptr(url))), 0)
 	}
 }
-
-func (w *webview) Init(js string) {}
-
-func (w *webview) Eval(js string) {}
 
 func (w *webview) watch(hwnd w32.HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	switch msg {

@@ -43,12 +43,12 @@ type WebView interface {
 	// Init injects JavaScript code at the initialization of the new page. Every
 	// time the webview will open a the new page - this initialization code will
 	// be executed. It is guaranteed that code is executed before window.onload.
-	Init(js string)
+	//Init(js string)
 
 	// Eval evaluates arbitrary JavaScript code. Evaluation happens asynchronously,
 	// also the result of the expression is ignored. Use RPC bindings if you want
 	// to receive notifications about the results of the evaluation.
-	Eval(js string)
+	//Eval(js string)
 }
 
 // New calls NewWindow to create a new window and a new webview instance. If debug
