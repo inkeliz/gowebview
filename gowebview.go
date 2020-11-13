@@ -40,6 +40,9 @@ type WebView interface {
 	// properly, webview will re-encode it for you.
 	SetURL(url string)
 
+	// SetVisibility updates the WindowMode, such as minimized or maximized
+	SetVisibility(v Visibility)
+
 	// Init injects JavaScript code at the initialization of the new page. Every
 	// time the webview will open a the new page - this initialization code will
 	// be executed. It is guaranteed that code is executed before window.onload.
@@ -115,9 +118,8 @@ type WindowConfig struct {
 	// Path defines the path where the DLL will be exported.
 	Path string
 
-	// @TODO Support Visibility (WindowMode)
 	// Visibility defines how the page must open.
-	//Visibility Visibility
+	Visibility Visibility
 
 	// Window defines the window handle (GtkWindow, NSWindow, HWND pointer or View pointer for Android).
 	// For Gio (Android):  it MUST point to `e.View` from `app.ViewEvent`
@@ -179,6 +181,19 @@ const (
 
 // Visibility are used to configure if the window mode (maximized or minimized)
 type Visibility int
+
+const (
+	// VisibilityDefault will open the window at their default WindowMode
+	VisibilityDefault Visibility = iota
+
+	// VisibilityMaximized will open the window as maximized
+	// Windowless systems (like Android) will open as fullscreen
+	VisibilityMaximized
+
+	// VisibilityMinimized will open the window as minimized
+	// Windowless systems (like Android) will hides the webview (return the previous view)
+	VisibilityMinimized
+)
 
 // Point are used to configure the size or coordinates.
 type Point struct {

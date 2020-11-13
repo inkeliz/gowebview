@@ -155,6 +155,17 @@ func (w *webview) SetURL(url string) {
 	})
 }
 
+func (w *webview) SetVisibility(v Visibility) {
+	switch v {
+	case VisibilityMinimized:
+		w.call("webview_hide", "()V")
+	case VisibilityMaximized:
+		w.call("webview_run", "()V")
+	default:
+		w.call("webview_run", "()V")
+	}
+}
+
 func (w *webview) setProxy(proxy *HTTPProxy) error {
 	if proxy == nil {
 		return nil

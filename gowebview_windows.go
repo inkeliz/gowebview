@@ -217,6 +217,17 @@ func (w *webview) SetURL(url string) {
 	}
 }
 
+func (w *webview) SetVisibility(v Visibility) {
+	switch v {
+	case VisibilityMaximized:
+		w32.ShowWindow(w.view.window, w32.SW_MAXIMIZE)
+	case VisibilityMinimized:
+		w32.ShowWindow(w.view.window, w32.SW_MINIMIZE)
+	default:
+		w32.ShowWindow(w.view.window, w32.SW_SHOWDEFAULT)
+	}
+}
+
 // watchlist is kinda of `map[hwnd]*webview
 var watchlist sync.Map
 
@@ -299,7 +310,7 @@ func (w *webview) createWindow() error {
 		return errors.New("CreateWindowEx failed")
 	}
 
-	w32.ShowWindow(w.view.window, w32.SW_SHOWDEFAULT)
+	w.SetVisibility(w.config.WindowConfig.Visibility)
 	w32.SetForegroundWindow(w.view.window)
 	w32.SetFocus(w.view.window)
 	w32.UpdateWindow(w.view.window)
