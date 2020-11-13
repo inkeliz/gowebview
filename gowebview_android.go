@@ -167,7 +167,7 @@ func (w *webview) SetVisibility(v Visibility) {
 }
 
 func (w *webview) setProxy(proxy *HTTPProxy) error {
-	if proxy == nil {
+	if proxy == nil || (proxy.IP == "" && proxy.Port == "") {
 		return nil
 	}
 
