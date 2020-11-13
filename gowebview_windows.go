@@ -57,10 +57,6 @@ func newWindow(config *Config) (wv WebView, err error) {
 		}
 	}
 
-	if err = os.Setenv("PATH", config.WindowConfig.Path+`;`+os.Getenv("PATH")); err != nil {
-		return nil, err
-	}
-
 	for _, s := range []string{"WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", "WEBVIEW2_USER_DATA_FOLDER", "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "WEBVIEW2_RELEASE_CHANNEL_PREFERENCE"} {
 		os.Unsetenv(s)
 	}
