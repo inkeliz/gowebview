@@ -96,7 +96,7 @@ func newWindow(config *Config) (wv WebView, err error) {
 	}
 
 	w.SetURL(config.URL)
-	w.SetProxy(config.TransportConfig.Proxy)
+	w.setProxy(config.TransportConfig.Proxy)
 
 	return w, nil
 }
@@ -155,7 +155,7 @@ func (w *webview) SetURL(url string) {
 	})
 }
 
-func (w *webview) SetProxy(proxy *HTTPProxy) error {
+func (w *webview) setProxy(proxy *HTTPProxy) error {
 	if proxy == nil {
 		return nil
 	}
@@ -172,14 +172,6 @@ func (w *webview) SetProxy(proxy *HTTPProxy) error {
 	}
 
 	return nil
-}
-
-func (w *webview) Init(js string) {
-	return
-}
-
-func (w *webview) Eval(js string) {
-	return
 }
 
 func (w *webview) call(name, sig string) (err error) {

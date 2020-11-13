@@ -217,10 +217,6 @@ func (w *webview) SetURL(url string) {
 	}
 }
 
-func (w *webview) Init(js string) {}
-
-func (w *webview) Eval(js string) {}
-
 func (w *webview) watch(hwnd w32.HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	switch msg {
 	case w32.WM_SIZE, w32.WM_SIZING, w32.WM_WINDOWPOSCHANGED:
