@@ -11,20 +11,6 @@ import (
 //go:generate javac -source 8 -target 8 -bootclasspath $ANDROID_HOME\platforms\android-29\android.jar -d $TEMP\gowebview\classes gowebview_android.java
 //go:generate jar cf gowebview_android.jar -C $TEMP\gowebview\classes .
 
-const (
-	// HintNone set the width and height are default size
-	HintNone Hint = iota
-
-	// HintFixed prevents the window size to be changed by a user
-	HintFixed
-
-	// HintMin set the minimum bounds
-	HintMin
-
-	// HintMax set the maximum bounds
-	HintMax
-)
-
 type webview struct {
 	vm   jni.JVM
 	view jni.Class

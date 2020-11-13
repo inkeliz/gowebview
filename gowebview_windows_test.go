@@ -3,7 +3,9 @@ package gowebview
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"github.com/inkeliz/gowebview/internal/network"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,15 +14,38 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	w, err := New(nil)
+	path, err := ioutil.TempDir("", "")
+	fmt.Println("TMP FOLDER:", path)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w, err := New(&Config{
+		WindowConfig: &WindowConfig{
+			Path:   path,
+		},
+		TransportConfig: &TransportConfig{
+			Proxy: &HTTPProxy{
+				IP:   "",
+				Port: "",
+			},
+		},
+		URL:   "",
+		Debug: false,
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer w.Destroy()
+	w.SetSize(&Point{
+		X: 400,
+		Y: 400,
+	}, HintMin)
 	w.SetTitle("Hello World")
-	w.SetSize(&Point{X: 1500, Y: 800}, HintMin)
 	w.SetURL(`https://google.com`)
 	w.Run()
+
 }
 
 func TestNewLocalHost(t *testing.T) {
@@ -65,7 +90,7 @@ func TestNewConfig(t *testing.T) {
 	path := filepath.Join(os.TempDir(), hex.EncodeToString(b))
 
 	w, err := New(&Config{
-		WindowConfig: &WindowConfig{Title: "Hello World", Size: &Point{X: 800, Y: 800}, Path: path},
+		WindowConfig: &WindowConfig{ Size: &Point{X: 800, Y: 800}, Path: path},
 	})
 
 	if err != nil {

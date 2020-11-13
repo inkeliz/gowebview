@@ -15,6 +15,12 @@ github.com/gobwas/pool v0.2.0/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6Wezm
 github.com/gobwas/ws v1.0.2/go.mod h1:szmBTxLgaFppYjEmNtny/v3w89xOydFnnZMcgRRu/EM=
 github.com/inkeliz/gojni v0.0.0-20200704012027-7a51868d0c0b h1:1iFMMC+BpEiXUgYnyjY3vk1DEDSbKkClUO1KuTCiPrc=
 github.com/inkeliz/gojni v0.0.0-20200704012027-7a51868d0c0b/go.mod h1:qfWwrUzhO2rFQKlDo3G5BdtiF9kQTaXg6PKotp3XtF4=
+github.com/inkeliz/w32 v1.0.0 h1:SeGha6LJ6lx/gJ+/Ub9OSV0OGSgnXngRPcWnzi/Em5I=
+github.com/inkeliz/w32 v1.0.0/go.mod h1:DMTMZoAdTXPaLLVVgZqU/nc6/ObI0QbHmOtWPIHJYf8=
+github.com/inkeliz/w32 v1.0.1 h1:wBJ7+YUWusYYfzWYLSX9eK5oFJFQ59nFy7erffRUmPc=
+github.com/inkeliz/w32 v1.0.1/go.mod h1:S/jA64It0hxx6uFFOwWBfAjNqvekp0iv1n98qLKd89I=
+github.com/inkeliz/w32 v1.0.2 h1:Es8Bmw9ApOY0PVRpGs7wsqIKdK5C3xBkP5TOATfVmtU=
+github.com/inkeliz/w32 v1.0.2/go.mod h1:S/jA64It0hxx6uFFOwWBfAjNqvekp0iv1n98qLKd89I=
 github.com/knq/sysutil v0.0.0-20191005231841-15668db23d08/go.mod h1:dFWs1zEqDjFtnBXsd1vPOZaLsESovai349994nHx3e0=
 github.com/mailru/easyjson v0.7.0/go.mod h1:KAzv3t3aY1NaHWoQz1+4F1ccyAH66Jk7yos7ldAVICs=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
