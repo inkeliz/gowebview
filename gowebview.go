@@ -9,36 +9,6 @@ import (
 
 //go:generate go run ./generator/generate.go
 
-// New calls NewWindow to create a new window and a new webview instance. If debug
-// is non-zero - developer tools will be enabled (if the platform supports them).
-func New(config *Config) (WebView, error) {
-	if config == nil {
-		config = new(Config)
-	}
-
-	if config.WindowConfig == nil {
-		config.WindowConfig = &WindowConfig{}
-	}
-
-	if config.TransportConfig == nil {
-		config.TransportConfig = &TransportConfig{}
-	}
-
-	if config.WindowConfig.Title == "" {
-		config.WindowConfig.Title = "gowebview"
-	}
-
-	if config.WindowConfig.Size == nil {
-		config.WindowConfig.Size = &Point{X: 600, Y: 600}
-	}
-
-	if config.WindowConfig.Path == "" {
-		config.WindowConfig.Path = filepath.Join(os.TempDir(), config.WindowConfig.Title)
-	}
-
-	return newWindow(config)
-}
-
 // WebView is the interface implemented by each webview.
 type WebView interface {
 
@@ -80,6 +50,42 @@ type WebView interface {
 	// to receive notifications about the results of the evaluation.
 	Eval(js string)
 }
+
+// New calls NewWindow to create a new window and a new webview instance. If debug
+// is non-zero - developer tools will be enabled (if the platform supports them).
+func New(config *Config) (WebView, error) {
+	if config == nil {
+		config = new(Config)
+	}
+
+	if config.WindowConfig == nil {
+		config.WindowConfig = &WindowConfig{}
+	}
+
+	if config.TransportConfig == nil {
+		config.TransportConfig = &TransportConfig{}
+	}
+
+	if config.WindowConfig.Title == "" {
+		dir, err := os.Executable()
+		if err != nil {
+			dir = "gowebview"
+		}
+		filename := filepath.Base(filepath.Clean(dir))
+		config.WindowConfig.Title = strings.Title(strings.TrimSuffix(filename, filepath.Ext(filename)))
+	}
+
+	if config.WindowConfig.Size == nil {
+		config.WindowConfig.Size = &Point{X: 600, Y: 600}
+	}
+
+	if config.WindowConfig.Path == "" {
+		config.WindowConfig.Path = filepath.Join(os.TempDir(), config.WindowConfig.Title)
+	}
+
+	return newWindow(config)
+}
+
 
 // Config are used to set the initial and default values to the WebView.
 type Config struct {
@@ -157,6 +163,20 @@ type TransportConfig struct {
 // Hint are used to configure window sizing and resizing
 type Hint int
 
+const (
+	// HintNone set the current and default width and height
+	HintNone Hint = iota
+
+	// HintFixed prevents the window size to be changed by a user
+	HintFixed
+
+	// HintMin set the minimum bounds
+	HintMin
+
+	// HintMax set the maximum bounds
+	HintMax
+)
+
 // Visibility are used to configure if the window mode (maximized or minimized)
 type Visibility int
 
@@ -178,6 +198,10 @@ func (p *HTTPProxy) Network() string {
 
 // String implements net.Addr
 func (p *HTTPProxy) String() string {
+	if p == nil || (p.Port == "" && p.IP == "") {
+		return ""
+	}
+
 	if strings.Index(p.IP, `:`) >= 0 && !strings.HasPrefix(p.IP, `[`) && !strings.HasPrefix(p.IP, `]`) {
 		return "[" + p.IP + "]:" + p.Port
 	}

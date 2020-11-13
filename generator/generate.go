@@ -45,7 +45,7 @@ func main() {
 		{
 			OS:     "windows",
 			Output: "lib_window.go",
-			Files:  []file{{Location: "libs/webview.dll", Name: "webview.dll"}, {Location: "libs/WebView2Loader.dll", Name: "WebView2Loader.dll"}},
+			Files:  []file{{Location: "libs/WebView2Loader.dll", Name: "WebView2Loader.dll"}},
 		},
 		{
 			OS:     "linux",
