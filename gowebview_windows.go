@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"syscall"
 	"unsafe"
 )
@@ -102,6 +103,9 @@ func (w *webview) create() error {
 			cerr <- err
 			return
 		}
+
+		watchlist.Store(w.view.window, w)
+		defer watchlist.Delete(w.view.window)
 
 		res, _, err := w.dll.Call(0, uintptr(unsafe.Pointer(windows.StringToUTF16Ptr(w.config.WindowConfig.Path))), 0, w.environmentCompletedHandler())
 		if res != 0 {
@@ -213,7 +217,17 @@ func (w *webview) SetURL(url string) {
 	}
 }
 
-func (w *webview) watch(hwnd w32.HWND, msg uint32, wParam, lParam uintptr) uintptr {
+// watchlist is kinda of `map[hwnd]*webview
+var watchlist sync.Map
+
+func watch(hwnd w32.HWND, msg uint32, wParam, lParam uintptr) uintptr {
+	ww, ok := watchlist.Load(hwnd)
+	if !ok {
+		return w32.DefWindowProc(hwnd, msg, wParam, lParam)
+	}
+
+	w := ww.(*webview)
+
 	switch msg {
 	case w32.WM_SIZE, w32.WM_SIZING, w32.WM_WINDOWPOSCHANGED:
 		w.updateSize(true)
@@ -258,7 +272,7 @@ func (w *webview) createWindow() error {
 	if _, ok := w32.GetClassInfoEx(w.view.instance, "webview"); !ok {
 		class := w32.RegisterClassEx(&w32.WNDCLASSEX{
 			Style:      w32.CS_HREDRAW | w32.CS_VREDRAW | w32.CS_OWNDC,
-			WndProc:    windows.NewCallback(w.watch),
+			WndProc:    windows.NewCallback(watch),
 			Instance:   w.view.instance,
 			Cursor:     w.view.cursor,
 			ClassName:  windows.StringToUTF16Ptr("webview"),
