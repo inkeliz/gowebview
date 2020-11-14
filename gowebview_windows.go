@@ -3,6 +3,9 @@
 package gowebview
 
 import (
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/inkeliz/gowebview/internal/network"
@@ -62,9 +65,8 @@ func newWindow(config *Config) (wv WebView, err error) {
 		os.Unsetenv(s)
 	}
 
-	if p := config.TransportConfig.Proxy.String(); p != "" {
-		os.Setenv("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", fmt.Sprintf(`--proxy-server="%s"`, p))
-	}
+	w.setProxy(config.TransportConfig.Proxy)
+	w.setCerts(config.TransportConfig.CertificateAuthorities)
 
 	dll, err := windows.LoadDLL(filepath.Join(config.WindowConfig.Path, "WebView2Loader.dll"))
 	if err != nil {
@@ -85,6 +87,34 @@ func newWindow(config *Config) (wv WebView, err error) {
 	w.SetTitle(w.config.WindowConfig.Title)
 
 	return w, nil
+}
+
+func (w *webview) setProxy(proxy *HTTPProxy) {
+	if proxy == nil || (proxy.IP == "" && proxy.Port == "") {
+		return
+	}
+
+	w.addEnv(` --proxy-server="%s"`, proxy.String())
+}
+
+func (w *webview) setCerts(certs []x509.Certificate) {
+	if certs == nil || len(certs) == 0 {
+		return
+	}
+
+	var jcerts string
+	h := sha256.New()
+	for _, c := range certs {
+		h.Write(c.RawSubjectPublicKeyInfo)
+		jcerts += base64.StdEncoding.EncodeToString(h.Sum(nil)) + ","
+		h.Reset()
+	}
+
+	w.addEnv(` --ignore-certificate-errors-spki-list="%s"`, jcerts)
+}
+
+func (w *webview) addEnv(argument, value string) {
+	os.Setenv("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", os.Getenv("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS")+" "+fmt.Sprintf(argument, value))
 }
 
 func (w *webview) create() error {
