@@ -38,6 +38,7 @@ type browser struct {
 type view struct {
 	instance w32.HINSTANCE
 	cursor   w32.HCURSOR
+	icon     w32.HICON
 	window   w32.HWND
 
 	min Point
@@ -310,12 +311,18 @@ func (w *webview) createWindow() error {
 		return errors.New("LoadCursorInt fails")
 	}
 
+	if path, err := os.Executable(); err == nil {
+		w.view.icon = w32.ExtractIcon(path, 0)
+	}
+
 	if _, ok := w32.GetClassInfoEx(w.view.instance, "webview"); !ok {
 		class := w32.RegisterClassEx(&w32.WNDCLASSEX{
 			Style:      w32.CS_HREDRAW | w32.CS_VREDRAW | w32.CS_OWNDC,
 			WndProc:    windows.NewCallback(watch),
 			Instance:   w.view.instance,
 			Cursor:     w.view.cursor,
+			Icon:       w.view.icon,
+			IconSm:     w.view.icon,
 			ClassName:  windows.StringToUTF16Ptr("webview"),
 			Background: w32.WHITE_BRUSH,
 		})
