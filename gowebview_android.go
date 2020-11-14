@@ -3,6 +3,8 @@
 package gowebview
 
 import (
+	"crypto/x509"
+	"encoding/base64"
 	"git.wow.st/gmp/jni"
 	"sync"
 	"unsafe"
@@ -97,6 +99,7 @@ func newWindow(config *Config) (wv WebView, err error) {
 
 	w.SetURL(config.URL)
 	w.setProxy(config.TransportConfig.Proxy)
+	w.setCerts(config.TransportConfig.CertificateAuthorities)
 
 	return w, nil
 }
@@ -167,7 +170,7 @@ func (w *webview) SetVisibility(v Visibility) {
 }
 
 func (w *webview) setProxy(proxy *HTTPProxy) error {
-	if proxy == nil {
+	if proxy == nil || (proxy.IP == "" && proxy.Port == "") {
 		return nil
 	}
 
@@ -179,6 +182,29 @@ func (w *webview) setProxy(proxy *HTTPProxy) error {
 	})
 
 	if b != true || err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (w *webview) setCerts(certs []x509.Certificate) error {
+	if certs == nil {
+		return nil
+	}
+
+	var jcerts string
+	for _, c := range certs {
+		jcerts += base64.StdEncoding.EncodeToString(c.Raw) + ";"
+	}
+
+	err := w.callArgs("webview_certs", "(Ljava/lang/String;)V", func(env jni.Env) []jni.Value {
+		return []jni.Value{
+			jni.Value(jni.JavaString(env, jcerts)),
+		}
+	})
+
+	if err != nil {
 		return err
 	}
 

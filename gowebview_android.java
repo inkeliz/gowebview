@@ -13,21 +13,58 @@ import android.widget.Toast;
 import android.webkit.WebView;
 import android.util.Log;
 import android.os.Build;
-import android.util.Log;
 import android.net.Proxy;
 import java.lang.reflect.*;
 import android.util.ArrayMap;
 import android.content.Intent;
 import java.util.concurrent.Semaphore;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+import java.security.cert.Certificate;
+import android.net.http.SslCertificate;
+import java.security.PublicKey;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
+import java.security.MessageDigest;
+import java.security.cert.CertificateFactory;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class gowebview_android {
     private View primaryView;
     private WebView webBrowser;
+    private PublicKey[] additionalCerts;
 
     public class gowebview_boolean {
         private boolean b;
         public void Set(Boolean r) {b = r;}
         public boolean Get() {return b;}
+    }
+
+    public class gowebview_webbrowser extends WebViewClient {
+        @Override public void onReceivedSslError(WebView v, final SslErrorHandler sslHandler, SslError err){
+            if (!err.hasError(SslError.SSL_UNTRUSTED)) {
+                super.onReceivedSslError(v, sslHandler, err);
+                return;
+            }
+
+            if (additionalCerts == null || additionalCerts.length == 0) {
+                super.onReceivedSslError(v, sslHandler, err);
+                return;
+            }
+
+            for (int i = 0; i < additionalCerts.length; i++) {
+                try{
+                    err.getCertificate().getX509Certificate().verify(additionalCerts[i]);
+                    sslHandler.proceed();
+                    return;
+                } catch (Exception e) {
+
+                }
+            }
+
+            super.onReceivedSslError(v, sslHandler, err);
+        }
     }
 
     // Executed when call `New(config *Config)`
@@ -46,7 +83,7 @@ public class gowebview_android {
                 webSettings.setUseWideViewPort(true);
                 webSettings.setLoadWithOverviewMode(true);
 
-                webBrowser.setWebViewClient(new WebViewClient());
+                webBrowser.setWebViewClient(new gowebview_webbrowser());
 
                 mutex.release();
             }
@@ -148,5 +185,24 @@ public class gowebview_android {
         }
 
         return result.Get();
+    }
+
+    public void webview_certs(String der) {
+        String[] sCerts = der.split(";");
+
+
+        additionalCerts = new PublicKey[sCerts.length];
+
+        for (int i = 0; i < sCerts.length; i++) {
+            InputStream streamCert = new ByteArrayInputStream(Base64.getDecoder().decode(sCerts[i]));
+            try {
+                CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                 X509Certificate cert = (X509Certificate)factory.generateCertificate(streamCert);
+
+                 additionalCerts[i] = cert.getPublicKey();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
