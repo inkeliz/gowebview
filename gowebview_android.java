@@ -29,6 +29,8 @@ import java.security.MessageDigest;
 import java.security.cert.CertificateFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 
 public class gowebview_android {
     private View primaryView;
@@ -43,23 +45,41 @@ public class gowebview_android {
 
     public class gowebview_webbrowser extends WebViewClient {
         @Override public void onReceivedSslError(WebView v, final SslErrorHandler sslHandler, SslError err){
-            if (!err.hasError(SslError.SSL_UNTRUSTED)) {
+            if (additionalCerts == null || additionalCerts.length == 0) {
                 super.onReceivedSslError(v, sslHandler, err);
                 return;
             }
 
-            if (additionalCerts == null || additionalCerts.length == 0) {
+            X509Certificate certificate = null;
+            try{
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                      certificate = err.getCertificate().getX509Certificate();
+                } else {
+                    // Old APIs doesn't have such .getX509Certificate()
+                    Bundle bundle = SslCertificate.saveState(err.getCertificate());
+                    byte[] certificateBytes = bundle.getByteArray("x509-certificate");
+                    if (certificateBytes != null) {
+                        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                        Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(certificateBytes));
+                        certificate = (X509Certificate) cert;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (certificate == null) {
                 super.onReceivedSslError(v, sslHandler, err);
                 return;
             }
 
             for (int i = 0; i < additionalCerts.length; i++) {
                 try{
-                    err.getCertificate().getX509Certificate().verify(additionalCerts[i]);
+                    certificate.verify(additionalCerts[i]);
                     sslHandler.proceed();
                     return;
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
 
@@ -171,6 +191,7 @@ public class gowebview_android {
 
                     result.Set(true);
                 } catch(Exception e) {
+                    e.printStackTrace();
                     result.Set(false);
                 }
 
