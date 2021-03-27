@@ -52,7 +52,7 @@ public class gowebview_android {
 
             X509Certificate certificate = null;
             try{
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
                       certificate = err.getCertificate().getX509Certificate();
                 } else {
                     // Old APIs doesn't have such .getX509Certificate()
