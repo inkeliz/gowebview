@@ -5,6 +5,7 @@ package gowebview
 import (
 	"crypto/x509"
 	"encoding/base64"
+	"errors"
 	"git.wow.st/gmp/jni"
 	"sync"
 	"unsafe"
@@ -174,15 +175,19 @@ func (w *webview) setProxy(proxy *HTTPProxy) error {
 		return nil
 	}
 
-	b, err := w.callBooleanArgs("webview_proxy", "(Ljava/lang/String;Ljava/lang/String;)Z", func(env jni.Env) []jni.Value {
+	ok, err := w.callBooleanArgs("webview_proxy", "(Ljava/lang/String;Ljava/lang/String;)Z", func(env jni.Env) []jni.Value {
 		return []jni.Value{
 			jni.Value(jni.JavaString(env, proxy.IP)),
 			jni.Value(jni.JavaString(env, proxy.Port)),
 		}
 	})
 
-	if b != true || err != nil {
+	if err != nil {
 		return err
+	}
+
+	if !ok {
+		return errors.New("impossible to set proxy")
 	}
 
 	return nil
@@ -198,7 +203,7 @@ func (w *webview) setCerts(certs []x509.Certificate) error {
 		jcerts += base64.StdEncoding.EncodeToString(c.Raw) + ";"
 	}
 
-	err := w.callArgs("webview_certs", "(Ljava/lang/String;)V", func(env jni.Env) []jni.Value {
+	ok, err := w.callBooleanArgs("webview_certs", "(Ljava/lang/String;)Z", func(env jni.Env) []jni.Value {
 		return []jni.Value{
 			jni.Value(jni.JavaString(env, jcerts)),
 		}
@@ -206,6 +211,10 @@ func (w *webview) setCerts(certs []x509.Certificate) error {
 
 	if err != nil {
 		return err
+	}
+
+	if !ok {
+		return errors.New("impossible to set certs")
 	}
 
 	return nil

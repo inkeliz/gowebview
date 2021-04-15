@@ -13,6 +13,7 @@ import android.widget.Toast;
 import android.webkit.WebView;
 import android.util.Log;
 import android.os.Build;
+import android.os.Parcelable;
 import android.net.Proxy;
 import java.lang.reflect.*;
 import android.util.ArrayMap;
@@ -24,13 +25,13 @@ import java.security.cert.Certificate;
 import android.net.http.SslCertificate;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.security.MessageDigest;
 import java.security.cert.CertificateFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.util.Base64;
 
 public class gowebview_android {
     private View primaryView;
@@ -50,7 +51,7 @@ public class gowebview_android {
                 return;
             }
 
-            X509Certificate certificate = null;
+            Certificate certificate = null;
             try{
                 if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
                       certificate = err.getCertificate().getX509Certificate();
@@ -60,8 +61,7 @@ public class gowebview_android {
                     byte[] certificateBytes = bundle.getByteArray("x509-certificate");
                     if (certificateBytes != null) {
                         CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                        Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(certificateBytes));
-                        certificate = (X509Certificate) cert;
+                        certificate = certFactory.generateCertificate(new ByteArrayInputStream(certificateBytes));
                     }
                 }
             } catch (Exception e) {
@@ -98,7 +98,9 @@ public class gowebview_android {
                 webBrowser = new WebView(primaryView.getContext());
                 WebSettings webSettings = webBrowser.getSettings();
                 webSettings.setJavaScriptEnabled(true);
-                webSettings.setSafeBrowsingEnabled(false);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+                    webSettings.setSafeBrowsingEnabled(false);
+                }
                 webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
                 webSettings.setUseWideViewPort(true);
                 webSettings.setLoadWithOverviewMode(true);
@@ -166,9 +168,9 @@ public class gowebview_android {
                 Context app = webBrowser.getContext().getApplicationContext();
 
                 System.setProperty("http.proxyHost", host);
-                System.setProperty("http.proxyPort", port + "");
+                System.setProperty("http.proxyPort", port);
                 System.setProperty("https.proxyHost", host);
-                System.setProperty("https.proxyPort", port + "");
+                System.setProperty("https.proxyPort", port);
 
                 try {
                     Field apk = app.getClass().getDeclaredField("mLoadedApk");
@@ -183,7 +185,22 @@ public class gowebview_android {
 
                             Class<?> cls = receiver.getClass();
                             if (cls.getName().contains("ProxyChangeListener")) {
-                                cls.getDeclaredMethod("onReceive", Context.class, Intent.class).invoke(receiver, app, new Intent(Proxy.PROXY_CHANGE_ACTION));
+
+                                String proxyInfoName = "android.net.ProxyInfo";
+                                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                                    proxyInfoName = "android.net.ProxyProperties";
+                                }
+
+                                Intent intent = new Intent(Proxy.PROXY_CHANGE_ACTION);
+
+                                Class proxyInfoClass = Class.forName(proxyInfoName);
+                                if (proxyInfoClass != null) {
+                                    Constructor proxyInfo = proxyInfoClass.getConstructor(String.class, Integer.TYPE, String.class);
+                                    proxyInfo.setAccessible(true);
+                                    intent.putExtra("proxy", (Parcelable) ((Object) proxyInfo.newInstance(host, Integer.parseInt(port), null)));
+                                }
+
+                                cls.getDeclaredMethod("onReceive", Context.class, Intent.class).invoke(receiver, app, intent);
                             }
                         }
 
@@ -208,14 +225,14 @@ public class gowebview_android {
         return result.Get();
     }
 
-    public void webview_certs(String der) {
+    public boolean webview_certs(String der) {
         String[] sCerts = der.split(";");
-
 
         additionalCerts = new PublicKey[sCerts.length];
 
         for (int i = 0; i < sCerts.length; i++) {
-            InputStream streamCert = new ByteArrayInputStream(Base64.getDecoder().decode(sCerts[i]));
+            InputStream streamCert = new ByteArrayInputStream(Base64.decode(sCerts[i], android.util.Base64.DEFAULT));
+
             try {
                 CertificateFactory factory = CertificateFactory.getInstance("X.509");
                  X509Certificate cert = (X509Certificate)factory.generateCertificate(streamCert);
@@ -223,7 +240,10 @@ public class gowebview_android {
                  additionalCerts[i] = cert.getPublicKey();
             } catch(Exception e) {
                 e.printStackTrace();
+                return false;
             }
         }
+
+        return true;
     }
 }
