@@ -36,8 +36,7 @@ type WebView interface {
 	SetSize(point *Point, hint Hint)
 
 	// Navigate navigates webview to the given URL. URL may be a data URI, i.e.
-	// "data:text/text,<html>...</html>". It is often ok not to url-encode it
-	// properly, webview will re-encode it for you.
+	// "data:text/text,<html>...</html>".
 	SetURL(url string)
 
 	// SetVisibility updates the WindowMode, such as minimized or maximized
