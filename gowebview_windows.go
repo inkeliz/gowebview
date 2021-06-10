@@ -256,6 +256,7 @@ func (w *webview) SetVisibility(v Visibility) {
 		w32.ShowWindow(w.view.window, w32.SW_MINIMIZE)
 	default:
 		w32.ShowWindow(w.view.window, w32.SW_SHOWDEFAULT)
+		w32.SetForegroundWindow(w.view.window)
 	}
 }
 
