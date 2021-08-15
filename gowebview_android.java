@@ -136,6 +136,17 @@ public class gowebview_android {
         });
     }
 
+    public void webview_hibernate() {
+        ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
+            public void run() {
+                Intent intent= new Intent(Intent.ACTION_MAIN);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                ((Activity)primaryView.getContext()).startActivity(intent);
+            }
+        });
+    }
+
     // Executed when call `.Destroy()`
     public void webview_destroy() {
         ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
