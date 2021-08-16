@@ -14,7 +14,7 @@ import
 	"gioui.org/widget/material"
 	"gioui.org/font/gofont"
 
-	"github.com/inkeliz/gowebview"
+	"github.com/diyism/goAndView"
 )
 
 func main()
