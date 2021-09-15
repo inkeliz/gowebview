@@ -105,6 +105,11 @@ func newWindow(config *Config) (wv WebView, err error) {
 	return w, nil
 }
 
+func (w *webview) Hibernate() {
+	w.call("webview_hibernate", "()V")
+	<-w.closed
+}
+
 func (w *webview) Run() {
 	w.call("webview_run", "()V")
 	<-w.closed

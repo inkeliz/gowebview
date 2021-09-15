@@ -16,6 +16,8 @@ type WebView interface {
 	// you must destroy the webview.
 	Run()
 
+	Hibernate()
+
 	// Terminate stops the main loop. It is safe to call this function from
 	// a background thread.
 	Terminate()
