@@ -11,7 +11,7 @@ import (
 	"unsafe"
 )
 
-//go:generate javac -source 8 -target 8 -bootclasspath $ANDROID_HOME\platforms\android-29\android.jar -d $TEMP\gowebview\classes gowebview_android.java
+//go:generate javac -source 8 -target 8 -bootclasspath $ANDROID_HOME\platforms\android-30\android.jar -d $TEMP\gowebview\classes gowebview_android.java
 //go:generate jar cf gowebview_android.jar -C $TEMP\gowebview\classes .
 
 type webview struct {
