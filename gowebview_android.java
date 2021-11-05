@@ -104,6 +104,8 @@ public class gowebview_android {
                 webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
                 webSettings.setUseWideViewPort(true);
                 webSettings.setLoadWithOverviewMode(true);
+                webSettings.setDomStorageEnabled(true);
+                webSettings.setDatabaseEnabled(true);
 
                 webBrowser.setWebViewClient(new gowebview_webbrowser());
 
