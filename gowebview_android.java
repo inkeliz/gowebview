@@ -32,6 +32,8 @@ import java.io.InputStream;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Base64;
+import android.webkit.URLUtil;
+import android.webkit.WebResourceRequest;
 
 public class gowebview_android {
     private View primaryView;
@@ -45,6 +47,17 @@ public class gowebview_android {
     }
 
     public class gowebview_webbrowser extends WebViewClient {
+        @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest request) {
+            String url = request.getUrl().toString();
+            if (url.isEmpty()) {
+                return false;
+            }
+            if (URLUtil.isNetworkUrl(url)) {
+                return false;
+            }
+            return true;
+        }
+
         @Override public void onReceivedSslError(WebView v, final SslErrorHandler sslHandler, SslError err){
             if (additionalCerts == null || additionalCerts.length == 0) {
                 super.onReceivedSslError(v, sslHandler, err);
