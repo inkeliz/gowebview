@@ -3,7 +3,7 @@
 Build android WebView app with Golang:
 
 ```bash
-#install forkgo: https://github.com/forkgo-org/go
+#install gofork: https://github.com/gofork-org/go
 go install gioui.org/cmd/gogio
 export PATH=$PATH:$GOPATH/bin
 go get -u github.com/diyism/goAndView
