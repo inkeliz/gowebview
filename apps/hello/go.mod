@@ -1,8 +1,8 @@
 module hello
 
-go 1.17
+go 1.18
 
 require (
-	gioui.org v0.0.0-20220414170908-ad7c1eb78df3
+	gioui.org ad7c1eb78df3f0a82552efc181c86b616034a22f
 	github.com/diyism/goAndView master
 )
