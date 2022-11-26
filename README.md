@@ -9,7 +9,7 @@ wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_lat
 unzip commandlinetools-linux-8092744_latest.zip
 ./cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --install "platforms;android-31"
 
-#install gofork: https://github.com/gofork-org/go
+#install gofork: https://github.com/gofork-org/goFork
 go install gioui.org/cmd/gogio@latest
 export PATH=$PATH:$GOPATH/bin
 go get -u github.com/diyism/goAndView
