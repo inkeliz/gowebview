@@ -147,6 +147,26 @@ public class gowebview_android {
         });
     }
 
+    public void webview_vibrate() {
+        ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
+            public void run() {
+                Vibrator vibrator = (Vibrator) ((Activity)primaryView.getContext()).getSystemService(Context.VIBRATOR_SERVICE);
+    
+                // Check whether device hardware supports vibration
+                if (vibrator.hasVibrator()) {
+                    // Vibrate for 500 milliseconds
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        // For newer versions use VibrationEffect
+                        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        vibrator.vibrate(500);
+                    }
+                }
+            }
+        });
+    }
+    
     // Executed when call `.Destroy()`
     public void webview_destroy() {
         ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
