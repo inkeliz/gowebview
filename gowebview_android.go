@@ -110,6 +110,11 @@ func (w *webview) Hibernate() {
 	<-w.closed
 }
 
+func (w *webview) Vibrate() {
+	w.call("webview_vibrate", "()V")
+	<-w.closed
+}
+
 func (w *webview) Run() {
 	w.call("webview_run", "()V")
 	<-w.closed
