@@ -18,6 +18,8 @@ type WebView interface {
 
 	Hibernate()
 
+	Vibrate()
+	
 	// Terminate stops the main loop. It is safe to call this function from
 	// a background thread.
 	Terminate()
