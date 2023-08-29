@@ -13,7 +13,7 @@ import (
 
 //to generate gowebview_android.jar:
 //javac -source 8 -target 8 -bootclasspath $ANDROID_SDK_ROOT/platforms/android-29/android.jar -d /tmp/gowebview/classes gowebview_android.java
-//jar -cf gowebview_android.jar -C /tmp/gowebview/classes
+//jar cf gowebview_android.jar -C /tmp/gowebview/classes .
 
 type webview struct {
 	vm   jni.JVM
