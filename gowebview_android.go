@@ -1,8 +1,6 @@
 //+build android
 
-
 package gowebview
-
 
 import (
 	"crypto/x509"
@@ -13,50 +11,9 @@ import (
 	"unsafe"
 )
 
-//to generate gowebview_android.jar
+//to generate gowebview_android.jar:
 //javac -source 8 -target 8 -bootclasspath $ANDROID_SDK_ROOT/platforms/android-29/android.jar -d /tmp/gowebview/classes gowebview_android.java
 //jar cf gowebview_android.jar -C /tmp/gowebview/classes
-
-
-Type Webview Struct {
-	VM JNI. JVM
-	view jni. Class
-
-
-	clsWebView jni. Class
-	objWebView jni. Object
-
-
-	closed chan bool
-	mutex *sync. Mutex
-
-
-	config *config
-}
-
-
-func newWindow(config *Config) (wv WebView, err error) {
-	w := &webview{
-		closed: make(chan bool),
-		mutex: new(sync. Mutex),
-		config: config,
-	}
-
-package gowebview
-
-import (
-	"crypto/x509"
-	"encoding/base64"
-	"errors"
-	"git.wow.st/gmp/jni"
-	"sync"
-	"unsafe"
-)
-
-//go:generate javac -source 8 -target 8 -bootclasspath $ANDROID_HOME\platforms\android-29\android.jar -d $TEMP\gowebview\classes gowebview_android.java
-//to generate gowebview_android.jar
-//            javac -source 8 -target 8 -bootclasspath $ANDROID_SDK_ROOT/platforms/android-29/android.jar -d /tmp/gowebview/classes gowebview_android.java
-//go:generate jar cf gowebview_android.jar -C $TEMP\gowebview\classes .
 
 type webview struct {
 	vm   jni.JVM
