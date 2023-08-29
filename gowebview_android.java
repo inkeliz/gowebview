@@ -33,6 +33,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Base64;
 import android.os.Vibrator;
+import android.os.VibrationEffect;
 
 public class gowebview_android {
     private View primaryView;
