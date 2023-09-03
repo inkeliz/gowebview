@@ -171,7 +171,7 @@ public class gowebview_android {
     }
 
     public void webview_wakelock() {
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) ((Activity)primaryView.getContext()).getSystemService(Context.POWER_SERVICE);
         powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "goAndViewWakelock").acquire();
     }
     
