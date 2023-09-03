@@ -16,7 +16,8 @@ go get -u github.com/diyism/goAndView
 cd $GOPATH/src/github.com/diyism/goAndView/apps/hello
 go mod tidy
 
-(if you want to add an android permission, for example "android.permission.VIBRATE", you can add it into the following file, just after "android.permission.INTERNET":
+(if you want to add an android permission, for example "android.permission.VIBRATE", "android.permission.WAKE_LOCK" etc,
+you can add it into the following file, just after "android.permission.INTERNET":
 $GOPATH/pkg/mod/gioui.org/cmd@v0.0.0-20230822165948-7cb98d0557e7/gogio/permission.go
 then "cd $GOPATH/pkg/mod/gioui.org/cmd@v0.0.0-20230822165948-7cb98d0557e7/gogio/" and run "go build .",
 then "cp gogio $GOPATH/bin/"
