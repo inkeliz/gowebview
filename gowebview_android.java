@@ -168,6 +168,11 @@ public class gowebview_android {
             }
         });
     }
+
+    public void webview_wakelock() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag").acquire();
+    }
     
     // Executed when call `.Destroy()`
     public void webview_destroy() {
