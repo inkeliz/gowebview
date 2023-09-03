@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.KeyEvent;
 import android.webkit.WebSettings;
 import android.content.Context;
-import android.os.PowerManager;
+//import android.os.PowerManager;
+import android.view.WindowManager;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import android.webkit.WebView;
@@ -171,8 +172,9 @@ public class gowebview_android {
     }
 
     public void webview_wakelock() {
-        PowerManager powerManager = (PowerManager) ((Activity)primaryView.getContext()).getSystemService(Context.POWER_SERVICE);
-        powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "goAndViewWakelock").acquire();
+        //PowerManager powerManager = (PowerManager) ((Activity)primaryView.getContext()).getSystemService(Context.POWER_SERVICE);
+        //powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "goAndViewWakelock").acquire();
+        ((Activity)primaryView.getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
     
     // Executed when call `.Destroy()`
