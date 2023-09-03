@@ -116,6 +116,11 @@ func (w *webview) Vibrate() {
 	<-w.closed
 }
 
+func (w *webview) Wakelock() {
+	w.call("webview_wakelock", "()V")
+	<-w.closed
+}
+
 func (w *webview) Run() {
 	w.call("webview_run", "()V")
 	<-w.closed
