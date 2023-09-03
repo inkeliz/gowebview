@@ -159,7 +159,7 @@ public class gowebview_android {
                     // Vibrate for 500 milliseconds
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         // For newer versions use VibrationEffect
-                        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                        vibrator.vibrate(VibrationEffect.createOneShot(300, 255));  //VibrationEffect.DEFAULT_AMPLITUDE(5), the amplitude from 1 to 255
                     } else {
                         //deprecated in API 26
                         vibrator.vibrate(500);
