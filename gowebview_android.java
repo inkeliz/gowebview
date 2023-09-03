@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.KeyEvent;
 import android.webkit.WebSettings;
 import android.content.Context;
+import android.os.PowerManager;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import android.webkit.WebView;
