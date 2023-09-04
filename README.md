@@ -25,5 +25,6 @@ then "cp gogio $GOPATH/bin/"
 )
 
 gogio --target android ./
+//gogio --target android --arch arm64 ./         //the hello.apk is only 5.5MB, if only for your arm64 phone
 adb install hello.apk
 ```
