@@ -181,6 +181,7 @@ public class gowebview_android {
         DevicePolicyManager dpm =(DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         ComponentName adminName = getComponentName(context);
         dpm.setLockTaskPackages(adminName, new String[]{getPackageName()});
+        primaryView.getActivity().startLockTask();
     }
 
     // Executed when call `.Destroy()`
