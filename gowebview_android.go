@@ -122,6 +122,11 @@ func (w *webview) Wakelock() {
 	<-w.closed
 }
 
+func (w *webview) Locktask() {
+	w.call("webview_locktask", "()V")
+	<-w.closed
+}
+
 func (w *webview) Run() {
 	w.call("webview_run", "()V")
 	<-w.closed

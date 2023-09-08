@@ -21,6 +21,8 @@ type WebView interface {
 	Vibrate()
 
 	Wakelock()
+    
+    Locktask()
 	
 	// Terminate stops the main loop. It is safe to call this function from
 	// a background thread.

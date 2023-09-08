@@ -35,6 +35,8 @@ import android.os.Build.VERSION_CODES;
 import android.util.Base64;
 import android.os.Vibrator;
 import android.os.VibrationEffect;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 
 public class gowebview_android {
     private View primaryView;
@@ -173,7 +175,14 @@ public class gowebview_android {
     public void webview_wakelock() {
         ((Activity)primaryView.getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
-    
+
+    public void webview_locktask() {
+        Context context = (Activity)primaryView.getContext();
+        DevicePolicyManager dpm =(DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName adminName = getComponentName(context);
+        dpm.setLockTaskPackages(adminName, new String[]{getPackageName()});
+    }
+
     // Executed when call `.Destroy()`
     public void webview_destroy() {
         ((Activity)primaryView.getContext()).runOnUiThread(new Runnable() {
