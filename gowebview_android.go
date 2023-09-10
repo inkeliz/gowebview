@@ -16,7 +16,7 @@ import (
 //rm -rf /tmp/gowebview/
 //javac -source 8 -target 8 -bootclasspath $ANDROID_SDK_ROOT/platforms/android-29/android.jar -d /tmp/gowebview/classes gowebview_android.java
 //jar cf gowebview_android.jar -C /tmp/gowebview/classes .
-//cp gowebview_android.jar $GOPATH/pkg/mod/github.com/diyism/go\!and\!view@v0.0.0-20230910132754-d66bfe78d840/
+//sudo cp gowebview_android.jar $GOPATH/pkg/mod/github.com/diyism/go\!and\!view@v0.0.0-20230910132754-d66bfe78d840/
 //  the  goAndView version number can see from $GOPATH/src/github.com/diyism/goAndView/apps/hello/go.mod
 
 type webview struct {
