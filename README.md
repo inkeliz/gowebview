@@ -20,11 +20,14 @@ go mod tidy
 don't use 'import (_ "gioui.org/app/permission/wakelock")', "go mod tidy" will replace gioui.org v0.0.0-20220414170908-ad7c1eb with v0.3.0, goAndView building will fail.
 
 you can add it just after "android.permission.INTERNET" in $GOPATH/pkg/mod/gioui.org/cmd@v0.0.0-20230822165948-7cb98d0557e7/gogio/permission.go
+(or git clone --depth 1 https://git.sr.ht/~eliasnaur/gio-cmd
+add it just after "android.permission.INTERNET" in ./gio-cmd/gogio/permission.go
+)
 
 if you want add "<receiver>...</receiver>", just after "<activity android:name="org.gioui.GioActivity>...</activity>"
-in $GOPATH/pkg/mod/gioui.org/cmd@v0.0.0-20230822165948-7cb98d0557e7/gogio/androidbuild.go
+in ./gio-cmd/gogio/androidbuild.go
 
-then "cd $GOPATH/pkg/mod/gioui.org/cmd@v0.0.0-20230822165948-7cb98d0557e7/gogio/",
+then "cd ./gio-cmd/gogio/",
 then "sudo /usr/local/go/bin/go build ."
 then "cp gogio $GOPATH/bin/"
 )
